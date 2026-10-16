@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: blob:; img-src 'self' data: blob:; font-src 'self' data: blob: local:">
+<title>BeamForge</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <!-- Top toolbar -->
+  <div id="toolbar">
+    <div class="tgroup">
+      <button data-cmd="new" data-icon="new" title="New (⌘N)"></button>
+      <button data-cmd="open" data-icon="open" title="Open project (⌘O)"></button>
+      <button data-cmd="save" data-icon="save" title="Save project (⌘S)"></button>
+      <button data-cmd="import" data-icon="import" title="Import SVG / DXF / image / G-code (⌘I)"></button>
+    </div>
+    <div class="tgroup">
+      <button data-cmd="undo" data-icon="undo" title="Undo (⌘Z)"></button>
+      <button data-cmd="redo" data-icon="redo" title="Redo (⇧⌘Z)"></button>
+    </div>
+    <div class="tgroup">
+      <button data-cmd="cut" data-icon="scissors" title="Cut (⌘X)"></button>
+      <button data-cmd="copy" data-icon="copy" title="Copy (⌘C)"></button>
+      <button data-cmd="paste" data-icon="paste" title="Paste (⌘V)"></button>
+      <button data-cmd="duplicate" data-icon="dup" title="Duplicate (⌘D)"></button>
+      <button data-cmd="delete" data-icon="trash" title="Delete (⌫)"></button>
+    </div>
+    <div class="tgroup">
+      <button data-cmd="group" data-icon="group" title="Group (⌘G)"></button>
+      <button data-cmd="ungroup" data-icon="ungroup" title="Ungroup (⇧⌘G)"></button>
+    </div>
+    <div class="tgroup">
+      <button data-cmd="mirrorH" data-icon="mirrorH" title="Mirror horizontally"></button>
+      <button data-cmd="mirrorV" data-icon="mirrorV" title="Mirror vertically"></button>
+      <button data-cmd="rotCCW" data-icon="rotL" title="Rotate 90° left"></button>
+      <button data-cmd="rotCW" data-icon="rotR" title="Rotate 90° right"></button>
+    </div>
+    <div class="tgroup">
+      <button data-cmd="alignL" data-icon="alignL" title="Align left"></button>
+      <button data-cmd="alignCH" data-icon="alignCH" title="Align centres horizontally"></button>
+      <button data-cmd="alignR" data-icon="alignR" title="Align right"></button>
+      <button data-cmd="alignT" data-icon="alignT" title="Align top"></button>
+      <button data-cmd="alignCV" data-icon="alignCV" title="Align centres vertically"></button>
+      <button data-cmd="alignB" data-icon="alignB" title="Align bottom"></button>
+      <button data-cmd="distH" data-icon="distH" title="Distribute horizontally"></button>
+      <button data-cmd="distV" data-icon="distV" title="Distribute vertically"></button>
+      <button data-cmd="centerPage" data-icon="center" title="Move to centre of work area"></button>
+    </div>
+    <div class="tgroup">
+      <button data-cmd="weld" data-icon="weld" title="Weld / union shapes"></button>
+      <button data-cmd="subtract" data-icon="subtract" title="Boolean subtract (first selected minus the rest)"></button>
+      <button data-cmd="intersect" data-icon="intersect" title="Boolean intersect"></button>
+      <button data-cmd="offset" data-icon="offset" title="Offset shapes…"></button>
+      <button data-cmd="array" data-icon="array" title="Grid array…"></button>
+      <button data-cmd="boxBuilder" data-icon="box" title="Box builder — finger-joint and rounded boxes"></button>
+      <button data-cmd="testGrid" data-icon="grid" title="Material test grid"></button>
+      <button data-cmd="tags" data-icon="tag" title="Asset tags & labels (QR / barcodes / serial numbers)"></button>
+      <button data-cmd="jig" data-icon="jig" title="Engraving jig maker — pockets for pencils, pens, coasters… and a batch layout"></button>
+      <button data-cmd="avPanel" data-icon="panel" title="AV panel maker (rack panels, connector plates)"></button>
+      <button data-cmd="vectorLib" data-icon="shapes" title="Vector library — free icons and shapes from the internet"></button>
+      <button data-cmd="camera" data-icon="camera" title="Camera — see your material on screen"></button>
+      <button data-cmd="nest" data-icon="nest" title="Nest parts — pack shapes onto the material (or spread them out)"></button>
+      <button data-cmd="autoArrange" data-icon="auto" title="Auto-arrange: optimised nesting in one click (⇧⌥⌘N)"></button>
+      <button data-cmd="trace" data-icon="trace" title="Trace image to vectors…"></button>
+      <button data-cmd="closePaths" data-icon="close" title="Close / join open paths"></button>
+      <button data-cmd="troubleshoot" data-icon="check" title="Vector troubleshooter — find and fix problems before cutting"></button>
+    </div>
+    <div class="tgroup grow"></div>
+    <div class="tgroup">
+      <button data-cmd="preview" data-icon="preview" class="wide" title="Preview job (⌥P)"><span>Preview</span></button>
+      <button data-cmd="cost" data-icon="coin" class="wide" title="Job time &amp; cost calculator"><span>Cost</span></button>
+      <button data-cmd="device" data-icon="gear" title="Device settings"></button>
+    </div>
+  </div>
+
+  <!-- Numeric edit bar -->
+  <div id="numbar">
+    <div class="anchor9" id="selAnchor" title="Reference point for X/Y"></div>
+    <label>X<input type="number" id="nX" step="0.1"></label>
+    <label>Y<input type="number" id="nY" step="0.1"></label>
+    <label>W<input type="number" id="nW" step="0.1" min="0.01"></label>
+    <label>H<input type="number" id="nH" step="0.1" min="0.01"></label>
+    <button id="nLock" class="toggle on" data-icon="lock" title="Lock aspect ratio"></button>
+    <label>Rot<input type="number" id="nR" step="1" value="0"></label>
+    <span class="unit">mm</span>
+    <div id="textProps" class="hidden">
+      <span class="sep"></span>
+      <textarea id="tText" rows="1" placeholder="Text" title="Text (Shift+Enter for new line)"></textarea>
+      <select id="tFont" title="Font"></select>
+      <button id="tFontFile" class="small" title="Load a font file (TTF/OTF)">+ Font</button>
+      <label>Size<input type="number" id="tSize" step="0.5" min="0.5" value="10"></label>
+      <button id="tBold" class="toggle" title="Bold"><b>B</b></button>
+      <button id="tItalic" class="toggle" title="Italic"><i>I</i></button>
+      <select id="tAlign" title="Alignment"><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select>
+      <label>Spacing<input type="number" id="tSpacing" step="0.1" value="0"></label>
+    </div>
+    <div id="polyProps" class="hidden">
+      <span class="sep"></span>
+      <label>Sides<input type="number" id="pSides" min="3" max="64" value="6"></label>
+      <label class="chk"><input type="checkbox" id="pStar"> Star</label>
+      <label>Corner<input type="number" id="pCorner" min="0" step="0.5" value="0" title="Rectangle corner radius"></label>
+    </div>
+  </div>
+
+  <div id="main">
+    <!-- Left tools -->
+    <div id="tools">
+      <button data-tool="select" data-icon="cursor" title="Select (V)" class="active"></button>
+      <button data-tool="pan" data-icon="hand" title="Pan (H or hold Space)"></button>
+      <button data-tool="rect" data-icon="rect" title="Rectangle (R)"></button>
+      <button data-tool="ellipse" data-icon="ellipse" title="Ellipse (E)"></button>
+      <button data-tool="polygon" data-icon="polygon" title="Polygon / star (P)"></button>
+      <button data-tool="line" data-icon="pen" title="Lines (L) — click points, double-click to finish"></button>
+      <button data-tool="text" data-icon="text" title="Text (T)"></button>
+      <button data-tool="measure" data-icon="ruler" title="Measure (M)"></button>
+      <button data-tool="laserpos" data-icon="target" title="Move laser to clicked position"></button>
+      <div class="tsep"></div>
+      <button data-cmd="zoomFit" data-icon="zoomFit" title="Zoom to work area (⌘0)"></button>
+      <button data-cmd="zoomSel" data-icon="zoomSel" title="Zoom to selection"></button>
+      <button data-cmd="zoomIn" data-icon="zoomIn" title="Zoom in (⌘+)"></button>
+      <button data-cmd="zoomOut" data-icon="zoomOut" title="Zoom out (⌘−)"></button>
+    </div>
+
+    <!-- Canvas -->
+    <div id="stage">
+      <div id="pagebar"></div>
+      <canvas id="cv"></canvas>
+      <div id="dropHint">Drop SVG, DXF, PNG, JPG or G-code files</div>
+    </div>
+
+    <!-- Right panel -->
+    <div id="side">
+      <section id="cuts">
+        <header>Cuts / Layers <span class="hint">double-click to edit</span></header>
+        <div id="layerList"></div>
+        <div id="layerQuick"></div>
+        <div class="row tight">
+          <button data-cmd="layerUp" class="small">▲ Up</button>
+          <button data-cmd="layerDown" class="small">▼ Down</button>
+          <span class="grow"></span>
+          <button data-cmd="library" class="small" title="Material library (Falcon 10W presets)">Library…</button>
+          <button data-cmd="layerEdit" class="small">Edit…</button>
+        </div>
+      </section>
+      <div id="tabs">
+        <button data-tab="laser" class="active">Laser</button>
+        <button data-tab="move">Move</button>
+        <button data-tab="console">Console</button>
+        <button data-tab="shape">Shape</button>
+      </div>
+      <section class="tab" id="tab-laser">
+        <div class="row">
+          <select id="connKind"><option value="serial">USB / Serial</option><option value="sim">Simulator (no laser)</option></select>
+          <select id="baud"><option>115200</option><option>250000</option><option>57600</option><option>38400</option><option>9600</option></select>
+          <button id="btnConnect" class="primary">Connect</button>
+        </div>
+        <div id="machineStatus"><span id="mState" class="pill">Disconnected</span><span id="rotChip" class="pill rot hidden" title="Rotary is on — click to change">Rotary</span><span id="mPos">X 0.00 Y 0.00</span></div>
+        <div class="grid3">
+          <button data-cmd="home" data-icon="home"><span>Home</span></button>
+          <button data-cmd="unlock" data-icon="unlock"><span>Unlock</span></button>
+          <button data-cmd="frame" data-icon="frame"><span>Frame</span></button>
+        </div>
+        <div class="row">
+          <label class="stack">Start from
+            <select id="startFrom"><option value="absolute">Absolute coords</option><option value="current">Current position</option><option value="user">User origin</option></select>
+          </label>
+          <label class="stack">Job origin <div class="anchor9" id="jobAnchor"></div></label>
+        </div>
+        <label class="chk"><input type="checkbox" id="optSel"> Cut selected graphics only</label>
+        <label class="chk"><input type="checkbox" id="optOpt" checked> Optimize cut order (inner shapes first)</label>
+        <div class="grid3 big">
+          <button id="btnStart" class="go" data-icon="play"><span>Start</span></button>
+          <button id="btnPause" data-icon="pause"><span>Pause</span></button>
+          <button id="btnStop" class="danger" data-icon="stop"><span>Stop</span></button>
+        </div>
+        <div id="jobEst" class="jobest"><span class="note">Nothing to cut yet</span></div>
+        <div id="jobProg"><div class="bar"><div id="progBar"></div></div><div id="progText">Idle</div></div>
+        <div class="row">
+          <button data-cmd="exportGcode" class="grow">Save G-code…</button>
+          <button data-cmd="sendGcodeFile" class="grow">Run G-code file…</button>
+        </div>
+      </section>
+      <section class="tab hidden" id="tab-move">
+        <div id="jogPad">
+          <button data-jog="-1,1">↖</button><button data-jog="0,1">▲</button><button data-jog="1,1">↗</button>
+          <button data-jog="-1,0">◀</button><button data-cmd="goOrigin" title="Go to work origin">⌂</button><button data-jog="1,0">▶</button>
+          <button data-jog="-1,-1">↙</button><button data-jog="0,-1">▼</button><button data-jog="1,-1">↘</button>
+        </div>
+        <div class="row center"><button data-jogz="1" class="small">Z ▲</button><button data-jogz="-1" class="small">Z ▼</button></div>
+        <div class="row">
+          <label class="stack">Distance (mm)<select id="jogStep"><option>0.1</option><option>1</option><option selected>10</option><option>50</option><option>100</option></select></label>
+          <label class="stack">Speed (mm/min)<input type="number" id="jogFeed" value="3000" step="100"></label>
+        </div>
+        <div class="row"><button data-cmd="setOrigin" class="grow">Set origin here</button><button data-cmd="clearOrigin" class="grow">Clear origin</button></div>
+        <p class="note">Arrow keys jog while this tab is open and the canvas has nothing selected. Use “Set origin here” with <b>Start from: User origin</b>.</p>
+      </section>
+      <section class="tab hidden" id="tab-console">
+        <div id="log"></div>
+        <div class="row tight"><input id="cmdIn" placeholder="Send command (↑ history)"><button id="cmdSend" class="small">Send</button></div>
+        <div class="row tight wrap">
+          <button class="small" data-send="$$">$$ settings</button><button class="small" data-send="$I">$I info</button>
+          <button class="small" data-send="$G">$G state</button><button class="small" data-send="$X">$X unlock</button>
+          <button class="small" data-send="$32=1">Laser mode on</button><button class="small" id="clearLog">Clear</button>
+        </div>
+      </section>
+      <section class="tab hidden" id="tab-shape">
+        <div id="shapeInfo" class="note">Select a shape or image.</div>
+        <div id="imgProps" class="hidden">
+          <h4>Image adjustments</h4>
+          <label class="sl">Brightness <input type="range" id="iBright" min="-100" max="100" value="0"><span></span></label>
+          <label class="sl">Contrast <input type="range" id="iContrast" min="-100" max="100" value="0"><span></span></label>
+          <label class="sl">Gamma <input type="range" id="iGamma" min="0.2" max="3" step="0.05" value="1"><span></span></label>
+          <label class="sl">Sharpen <input type="range" id="iSharpen" min="0" max="100" value="0"><span></span></label>
+          <label class="sl">Threshold <input type="range" id="iThresh" min="1" max="254" value="128"><span></span></label>
+          <label class="chk"><input type="checkbox" id="iInvert"> Negative image</label>
+          <label class="chk"><input type="checkbox" id="iShowProc" checked> Show processed preview on canvas</label>
+          <div class="row"><button data-cmd="trace" class="grow">Trace to vectors…</button><button data-cmd="resetImg" class="grow">Reset</button></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="bottom">
+    <div id="palette"></div>
+    <div id="statusbar"><span id="sCursor">x: 0.00 y: 0.00</span><span id="sZoom">100%</span><span id="sSel"></span><span class="grow"></span><span id="sMsg"></span></div>
+  </div>
+</div>
+
+<!-- Modal host -->
+<div id="modal" class="hidden"><div class="dlg"><header><span class="title"></span><button class="x">✕</button></header><div class="body"></div><footer></footer></div></div>
+<div id="toasts"></div>
+<input type="file" id="fileIn" class="hidden">
+
+<script>window.__bootErrors = 0; window.addEventListener("error", function () { window.__bootErrors++; });</script>
+<script src="js/geom.js"></script>
+<script src="js/trace.js"></script>
+<script src="js/importers.js"></script>
+<script src="js/raster.js"></script>
+<script src="js/gcode.js"></script>
+<script src="js/library.js"></script>
+<script src="js/nest.js"></script>
+<script src="js/model3d.js"></script>
+<script src="js/codes.js"></script>
+<script src="js/boxmaker.js"></script>
+<script src="js/grbl.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/app.js"></script>
+<script src="js/makers.js"></script>
+<script src="js/jig.js"></script>
+<script src="js/extras.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+#!/bin/bash
+# BeamForge installer for macOS.
+# Downloads the official Electron runtime (open-source, from github.com/electron),
+# wraps the BeamForge app around it, signs it locally and puts it in /Applications.
+set -e
+cd "$(dirname "$0")"
+HERE="$(pwd)"
+VER="33.2.1"
+ARCH="$(uname -m)"; [ "$ARCH" = "arm64" ] || ARCH="x64"
+URL="https://github.com/electron/electron/releases/download/v$VER/electron-v$VER-darwin-$ARCH.zip"
+TMP="$(mktemp -d)"
+echo ""
+echo "  BeamForge installer"
+echo "  -------------------"
+echo "  Mac type: $ARCH"
+echo "  Downloading runtime (~100 MB)…"
+curl -L --fail --progress-bar -o "$TMP/e.zip" "$URL" || { echo "Download failed — check your internet connection and try again."; read -n1 -r -p "Press any key to close"; exit 1; }
+echo "  Building app…"
+ditto -x -k "$TMP/e.zip" "$TMP/x"
+APP="$TMP/x/BeamForge.app"
+mv "$TMP/x/Electron.app" "$APP"
+RES="$APP/Contents/Resources"
+rm -f "$RES/default_app.asar"
+mkdir -p "$RES/app"
+cp -R "$HERE/BeamForge-app/." "$RES/app/"
+cp "$HERE/BeamForge-app/icon.icns" "$RES/electron.icns"
+P="$APP/Contents/Info.plist"; PB=/usr/libexec/PlistBuddy
+$PB -c "Set :CFBundleName BeamForge" "$P"
+$PB -c "Set :CFBundleDisplayName BeamForge" "$P" 2>/dev/null || $PB -c "Add :CFBundleDisplayName string BeamForge" "$P"
+$PB -c "Set :CFBundleIdentifier za.co.uniqueav.beamforge" "$P"
+$PB -c "Set :CFBundleShortVersionString $(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$HERE/BeamForge-app/package.json")" "$P"
+$PB -c "Set :CFBundleVersion 1.0.0" "$P"
+$PB -c "Delete :CFBundleDocumentTypes" "$P" 2>/dev/null || true
+$PB -c "Add :CFBundleDocumentTypes array" "$P"
+$PB -c "Add :CFBundleDocumentTypes:0 dict" "$P"
+$PB -c "Add :CFBundleDocumentTypes:0:CFBundleTypeName string 'BeamForge Project'" "$P"
+$PB -c "Add :CFBundleDocumentTypes:0:CFBundleTypeRole string Editor" "$P"
+$PB -c "Add :CFBundleDocumentTypes:0:LSHandlerRank string Owner" "$P"
+$PB -c "Add :CFBundleDocumentTypes:0:CFBundleTypeExtensions array" "$P"
+$PB -c "Add :CFBundleDocumentTypes:0:CFBundleTypeExtensions:0 string bfproj" "$P"
+$PB -c "Add :CFBundleDocumentTypes:1 dict" "$P"
+$PB -c "Add :CFBundleDocumentTypes:1:CFBundleTypeName string 'BeamForge Update'" "$P"
+$PB -c "Add :CFBundleDocumentTypes:1:CFBundleTypeRole string Viewer" "$P"
+$PB -c "Add :CFBundleDocumentTypes:1:LSHandlerRank string Owner" "$P"
+$PB -c "Add :CFBundleDocumentTypes:1:CFBundleTypeExtensions array" "$P"
+$PB -c "Add :CFBundleDocumentTypes:1:CFBundleTypeExtensions:0 string bfupdate" "$P"
+echo "  Signing (local ad-hoc signature)…"
+xattr -cr "$APP"
+codesign --force --deep --sign - "$APP" >/dev/null 2>&1 || true
+echo "  Installing to /Applications…"
+rm -rf "/Applications/BeamForge.app" 2>/dev/null || sudo rm -rf "/Applications/BeamForge.app"
+mv "$APP" /Applications/ 2>/dev/null || sudo mv "$APP" /Applications/
+rm -rf "$TMP"
+echo ""
+echo "  ✅ BeamForge is installed in Applications. Opening it now…"
+open "/Applications/BeamForge.app"

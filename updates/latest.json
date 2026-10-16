@@ -1,0 +1,9 @@
+{
+ "version": "1.5.1",
+ "notes": "Automatic updates now come straight from GitHub. Also in 1.5: sliding and hinged box lids, tight auto-nesting of box pieces, one-click Auto-arrange, and an engraving jig maker for pencils, pens, coasters and blanks.",
+ "package": "BeamForge-1.5.1.bfupdate",
+ "sha256": "a1ab25f87d91000b7983b5943fee48534ea9ae6fbff888da1e610ac0b8acd2de",
+ "size": 647678,
+ "minElectron": 33,
+ "released": "2026-10-16T07:44:48Z"
+}

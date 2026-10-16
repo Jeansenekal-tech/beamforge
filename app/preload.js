@@ -1,0 +1,23 @@
+const { contextBridge, ipcRenderer } = require('electron');
+contextBridge.exposeInMainWorld('native', {
+  platform: process.platform,
+  onMenu: (cb) => ipcRenderer.on('menu', (e, cmd) => cb(cmd)),
+  onSerialPorts: (cb) => ipcRenderer.on('serial-ports', (e, list) => cb(list)),
+  chooseSerial: (id) => ipcRenderer.send('serial-chosen', id),
+  onOpenFile: (cb) => ipcRenderer.on('open-file', (e, f) => cb(f)),
+  saveFile: (opts) => ipcRenderer.invoke('save-file', opts),
+  openFile: (opts) => ipcRenderer.invoke('open-file', opts),
+  notify: (title, body) => ipcRenderer.send('notify', { title, body }),
+  appReady: () => ipcRenderer.send('app-ready'),
+  appInfo: () => ipcRenderer.invoke('app-info'),
+  onUpdate: (cb) => ipcRenderer.on('update-event', (e, ev) => cb(ev)),
+  checkUpdates: () => ipcRenderer.invoke('update-check'),
+  installUpdate: (data) => ipcRenderer.invoke('update-install-data', data),
+  updateSettings: (s) => ipcRenderer.invoke('update-settings', s),
+  restartToUpdate: () => ipcRenderer.send('update-restart'),
+  apiInfo: () => ipcRenderer.invoke('api-info'),
+  libFetch: (url) => ipcRenderer.invoke('lib-fetch', url),
+  apiSettings: (s) => ipcRenderer.invoke('api-settings', s),
+  onApiRequest: (cb) => ipcRenderer.on('api-request', (e, r) => cb(r)),
+  apiRespond: (r) => ipcRenderer.send('api-response', r),
+});

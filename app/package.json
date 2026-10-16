@@ -1,0 +1,9 @@
+{
+  "name": "beamforge",
+  "productName": "BeamForge",
+  "version": "1.5.1",
+  "description": "Laser design and control software for GRBL lasers",
+  "main": "main.js",
+  "author": "Jean Senekal",
+  "license": "UNLICENSED"
+}
